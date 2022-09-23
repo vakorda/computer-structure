@@ -35,10 +35,10 @@ main:
 .text
 main:
 	li a0 0
-	li t0 100
-	li t2 1
-bucle: bgt t2 t0 fin
-	add a0 a0 t2 
+	li t0 100 # the upper bound
+	li t2 1 # counter
+bucle: bgt t2 t0 fin # if the counter is bigger than 100, we stop
+	add a0 a0 t2 # we store in a0 the sum of the elements of the counter
 	addi t2 t2 1
 	j bucle
 
@@ -48,25 +48,25 @@ fin:
 #4 exercise ######################################################################################################################################
 .text
 main:
-	li t1 7
-	li t2 3
+	li t1 7 # first number
+	li t2 3 # second number
 	
-	if_1: bgt t1 t2 continue
-	mv t0 t1 #t0 = t1
+	if_1: bgt t1 t2 continue # we compare both numbers to get the bigger one (asume if the first is bigger, we jump)
+	mv t0 t1 #t0 = t1 # in case the second is bigger, we switch their values and then jump
 	mv t1 t2 #t1 = t2
 	mv t2 t0 #t2 = t0
 
 continue:
-	rem t0 t1 t2 # t0 = t1 % t3
-	bnez t0 fin_2  # if 
-	li a0 0
-	j fin
+	rem t0 t1 t2 # t0 = t1 % t3 # calculate the remminder of the bigger / smaller
+	bnez t0 fin_2  # And if its not equal to 0, we print the value of a0 (which is 0 = False) and are not multiples
+	li a0 0 # its 0 the reminder, they are multiples so we change a0 to 1 
+	j fin # and jump to end
 	
 fin:
   li a0 1
 
 fin_2:
-	li a7 1
+  li a7 1
   ecall
 #5 exercise ######################################################################################################################################
 .text
