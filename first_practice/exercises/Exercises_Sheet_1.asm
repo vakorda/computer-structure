@@ -71,23 +71,23 @@ fin_2:
 #5 exercise ######################################################################################################################################
 .text
 main:
-	li t0 8
-	li t1 0
-	li a0 0
+	li t0 8 # your number
+	li t1 0 # count (tope, ya que hay que hacerlo varias veces)
+	li a0 0 # value of a0
 	li a7 1
 
-bucle_1: beq t1 t0 fin
-	addi t1 t1 1
-	li a7 11
-	li a0 10
+bucle_1: beq t1 t0 fin # if the counter is equal to the max, its the last bucle 
+	addi t1 t1 1 #add 1 to the counter
+	li a7 11 # this is for a space in between counts
+	li a0 10 # command for the string
 	ecall
 	li a0 0
 	j bucle_2
 
-bucle_2: beq a0 t1 bucle_1
+bucle_2: beq a0 t1 bucle_1 # counter until t1 (el tope)
 	addi a0 a0 1
 	li a7 1
-	ecall
+	ecall # and print it
 	j bucle_2
 
 
@@ -98,18 +98,18 @@ fin:
 #6 exercise ######################################################################################################################################
 .text
 main:
-	li t1 7
-	li t2 3
-	li a7 1
+	li t1 7 # the first number
+	li t2 3 # the second number
+	li a7 1 #print an int
 
-if_1: bgt t1 t2 continue
-	mv a0 t2
+if_1: bgt t1 t2 continue # if the first is bigger than the second we move
+	mv a0 t2 # elif the second is bigger than the first, we set in a0 the value of the second number
 	ecall
 	li a7 10
 	ecall
 
 continue:
-	mv a0 t1
+	mv a0 t1 # set in a0 the value of the first number
 	ecall
 #7 exercise ######################################################################################################################################
 .data
