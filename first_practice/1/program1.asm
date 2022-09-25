@@ -1,5 +1,5 @@
 .data
-	.align 2
+  .align 2
     string1: .string "hola"
     string2: .string "hola"
 
@@ -12,13 +12,16 @@ string_compare:
     lbu t2 0(t0) # a = char11
     lbu t3 0(t1) # b = char12
 
-buc1: beqz t2 yes
+buc1: beqz t2 try #if t2 is equal to 0, we check if t3 is also equal
     bne t2 t3 not_eq # if a[n] != b[n] -> not eq
     addi t0 t0 1 # Address1 + 1
     addi t1 t1 1 # Address2 + 1
     lbu t2 0(t0) # reset value of the addresses
     lbu t3 0(t1)
     j buc1
+try:
+	beqz t3 yes #and if t3 is also equal, both words have the same length so its the same word
+	j not_eq #if not, one word is longer so they arent equal
 yes: 
 	li a7 1 #read int
     li a0 1 #its the same word, so 1
