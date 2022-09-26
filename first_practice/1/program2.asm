@@ -1,6 +1,7 @@
 .data
    stored_key: .string "one"
-   user_key: .string "Please insert password"
+   user_key: .string "Please insert password:
+" # Necessary so that the next message appears below
    valid_msg: .string "Valid"
    no_valid_msg: .string "Invalid"
 .text
