@@ -54,5 +54,5 @@ loop2: bge t4 t5 end2
   j loop2
 end2:
 addi sp sp 4
-  lw ra 0(fp)
+  lw ra 0(sp)
 	jr ra
