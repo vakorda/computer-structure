@@ -35,15 +35,10 @@ string_compare:
         lbu t3 0(t1)
         j buc1
     try:
-        beqz t3 print_yes # if buc1(char1 == 0) and char2 == 0: print_yes; and if t3 is also equal, both words have the same length so its the same word
-        j print_no    	  # else: print_no; if not, one word is longer so they arent equal
-
-    print_yes:
+        bnez t3 print_no # if buc1(char1 == 0) and char2 == 0: print_yes; and if t3 is also equal, both words have the same length so its the same word
         la a0 valid_msg
         j end
     print_no:
         la a0 no_valid_msg
-        j end
-
     end: li a7 4
         ecall
