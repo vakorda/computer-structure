@@ -29,7 +29,6 @@ string_compare:
 		jr ra
 
 study_energy:
-	mv fp sp
 	sw ra 0(sp)
   addi sp sp -4
 
