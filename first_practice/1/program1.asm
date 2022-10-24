@@ -17,8 +17,6 @@ main:
     li a7 10 #exit
     ecall
 string_compare:
-    la a2 string1 #Argument 1 = adress 1
-    la a3 string2 #Argument 2 = adress 2
     lbu t2 0(a2) # a = char11
     lbu t3 0(a3) # b = char12
 
