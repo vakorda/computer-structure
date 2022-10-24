@@ -2,10 +2,11 @@
    stored_key: .string "password"
 .text
 
-# string_compare: a0, a1, a2,   ,   ,   ,   ,   ,   , t2, t3
-# study_energy:   a0,   , a2, a3,   ,   ,   ,   , t1,
-# loop_1:         a0,   ,   , a3,   ,   ,   , a7,   ,   ,   ,   , t5
-# total:          a0, a1, a2, a3,   ,   ,   , a7, t1, t2, t3,   , t5
+# string_compare: a0, a1, a2,   ,   ,   ,   ,   ,   , t2, t3,   ,   ,
+# study_energy:   a0,   , a2, a3,   ,   ,   ,   , t1,   ,   ,   ,   ,
+# loop_1:         a0,   ,   , a3,   ,   ,   , a7,   ,   ,   ,   , t5,
+# total:          a0, a1, a2, a3,   ,   ,   , a7, t1, t2, t3,   , t5,
+# free:             ,   ,   ,   , a4, a5, a6,   ,   ,   ,   , t4,   , t6
 
 main:
     li a3 'a' # first char on the alphabet
