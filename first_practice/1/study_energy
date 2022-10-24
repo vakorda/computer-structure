@@ -10,6 +10,12 @@ loop_1: beqz t5 end
     li a7 11
     ecall
     
+    # save char in the stack
+    sb a3 0(sp)
+    sb x0 1(sp)
+    # go to next position in the stack
+    addi sp sp -4
+    
     jal ra study_energy # a3 = letter to study energy for -> a0
     
     li a7 1 # print cycles
@@ -28,12 +34,9 @@ end:li a7 10 # end
 study_energy:
 	# save ra
     sw ra 0(sp)
-    # go to next position on the stack
-    addi sp sp -4
-
-    sb a3 0(sp)
-    sb x0 1(sp)
-      
+    # go to prev position on the stack (word to study energy saved there)
+    addi sp sp 4
+    
     mv a2 sp
     rdcycle t1
     jal ra string_compare # a2 = Address1 -> a0
@@ -41,8 +44,8 @@ study_energy:
     sub a0 a0 t1
     
     # restore previous ra
-    addi sp sp 4
-    lw ra 0(sp)
+    lw ra -4(sp)
+    addi sp sp -4
     jr ra
 
 
