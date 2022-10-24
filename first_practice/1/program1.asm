@@ -28,11 +28,9 @@ buc1: beqz t2 try # if t2 == 0, we check t3 == 0
     lbu t3 0(a3)
     j buc1
 
-try: beqz t3 yes # if t3 also == 0, both words have the same length and charachters
-	# t3 != 0 one word is longer so they arent equal -> not_eq
+try: bnez t3 not_eq # and if t3 is also equal, both words have the same length so its the same word
+	li a0 1 #its the same word, so 1
+    jr ra
 not_eq:
     li a0 0 #different words, so 0
-    jr ra
-yes: 
-    li a0 1 #its the same word, so 1
     jr ra
