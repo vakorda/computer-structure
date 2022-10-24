@@ -1,0 +1,67 @@
+.data
+   stored_key: .string "password"
+.text
+main:
+    li a3 'a' # first char on the alphabet
+    li t5 26 # number of letters on the alphabet
+    
+loop_1: beqz t5 end
+	mv a0 a3 # print char
+    li a7 11
+    ecall
+    
+    jal ra study_energy # a3 = letter to study energy for -> a0
+    
+    li a7 1 # print cycles
+    ecall
+    li a7 11 # go to next line
+    li a0 10
+    ecall
+    
+    addi a3 a3 1 # next char
+    addi t5 t5 -1 # lower counter
+    j loop_1
+    
+end:li a7 10 # end
+    ecall
+
+study_energy:
+	# save ra
+    sw ra 0(sp)
+    # go to next position on the stack
+    addi sp sp -4
+
+    sb a3 0(sp)
+    sb x0 1(sp)
+      
+    mv a2 sp
+    rdcycle t1
+    jal ra string_compare # a2 = Address1 -> a0
+    rdcycle a0
+    sub a0 a0 t1
+    
+    # restore previous ra
+    addi sp sp 4
+    lw ra 0(sp)
+    jr ra
+
+
+string_compare:
+    la a1 stored_key #Argument 1 = saved password
+    lbu t2 0(a1) # a = char11
+    lbu t3 0(a2) # b = char12
+
+buc1: beqz t2 try #if t2 is equal to 0, we check if t3 is also equal
+    bne t2 t3 not_eq # if a[n] != b[n] -> not eq
+    addi a1 a1 1 # Address1 + 1
+    addi a2 a2 1 # Address2 + 1
+    lbu t2 0(a1) # reset value of the addresses
+    lbu t3 0(a2)
+    j buc1
+
+try: bnez t3 not_eq # and if t3 is also equal, both words have the same length so its the same word
+	li a0 1 # its the same word, so 1
+    jr ra
+not_eq:
+    li a0 0 # different words, so 0
+    jr ra
