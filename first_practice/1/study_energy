@@ -1,77 +1,90 @@
 .data
-   stored_key: .string "password"
+   stored_key: .string "one"
 .text
-
-# string_compare: a0, a1, a2,   ,   ,   ,   ,   ,   , t2, t3,   ,   ,
-# study_energy:   a0,   , a2, a3,   ,   ,   ,   , t1,   ,   ,   ,   ,
-# loop_1:         a0,   ,   , a3,   ,   ,   , a7,   ,   ,   ,   , t5,
-# total:          a0, a1, a2, a3,   ,   ,   , a7, t1, t2, t3,   , t5,
-# free:             ,   ,   ,   , a4, a5, a6,   ,   ,   ,   , t4,   , t6
-
 main:
-    li a3 'a' # first char on the alphabet
-    li t5 26 # number of letters on the alphabet
+	la a0 stored_key
+	jal ra study_energy
+  
+	li a7 10
+	ecall
+
+study_energy:
+	# save ra
+  	addi sp sp -4
+	sw ra 0(sp)
+	
+    mv t0 a0 # save passord adress into t2
     
-loop_1: beqz t5 end
-	mv a0 a3 # print char
+	li t1 26
+  	li a2 'a'
+
+loop2: beqz t1 end2
+	# print char
+  	mv a0 a2
     li a7 11
     ecall
     
     # save char in the stack
-    sb a3 0(sp)
+    addi sp sp -4
+    sb a2 0(sp)
     sb x0 1(sp)
-    # go to next position in the stack
-    addi sp sp -4
+	
+    mv a0 t0 # adress1 = saved password
+    mv a1 sp # address2 = character
+  	
+    rdcycle t2
+  	jal ra string_compare
+	rdcycle t3
+  	sub t3 t3 t2
     
-    jal ra study_energy # a3 = letter to study energy for -> a0
-    
-    li a7 1 # print cycles
+    # print ':'
+    li a7 11
+    li a0 ':'
     ecall
-    li a7 11 # go to next line
-    li a0 10
+    # print ' '
+    li a0 ' '
     ecall
+    # print cycles
+	li a7 1
+    mv a0 t3
+	ecall
+    # next line
+    li a7 11
+	li a0 10
+	ecall
     
-    addi a3 a3 1 # next char
-    addi t5 t5 -1 # lower counter
-    j loop_1
-    
-end:li a7 10 # end
-    ecall
+  	addi a2 a2 1
+  	addi t1 t1 -1
+  	j loop2
 
-study_energy:
-	# save ra
-    sw ra 0(sp)
-    # go to prev position on the stack (word to study energy saved there)
+end2:
+  	lw ra 0(sp)
     addi sp sp 4
+	jr ra
     
-    mv a2 sp
-    rdcycle t1
-    jal ra string_compare # a2 = Address1 -> a0
-    rdcycle a0
-    sub a0 a0 t1
     
-    # restore previous ra
-    lw ra -4(sp)
-    addi sp sp -4
-    jr ra
+string_compare: # a0 = adress1, a1 = adress2 -> return[1, 0, -1] = a0
+    lbu t4 0(a0) # char1 = adress1[0]
+    lbu t5 0(a1) # char2 = adress2[0]
+    
+    # if char1 == 0 and char2 == 0: error
+    bnez t4 buc1 
+    beqz t5 error
 
-
-string_compare:
-    la a1 stored_key #Argument 1 = saved password
-    lbu t2 0(a1) # a = char11
-    lbu t3 0(a2) # b = char12
-
-buc1: beqz t2 try #if t2 is equal to 0, we check if t3 is also equal
-    bne t2 t3 not_eq # if a[n] != b[n] -> not eq
-    addi a1 a1 1 # Address1 + 1
-    addi a2 a2 1 # Address2 + 1
-    lbu t2 0(a1) # reset value of the addresses
-    lbu t3 0(a2)
+buc1: beqz t4 try # if char1 == 0 -> check if char2 == 0
+    bne t4 t5 not_eq # if char1 != char2 -> not eq
+    addi a0 a0 1 # address1 + 1
+    addi a1 a1 1 # address2 + 1
+    lbu t4 0(a0) # set next char into registers
+    lbu t5 0(a1)
     j buc1
 
-try: bnez t3 not_eq # and if t3 is also equal, both words have the same length so its the same word
-	li a0 1 # its the same word, so 1
+try: bnez t5 not_eq # char2 also == 0: both words have the same length and characters -> return 1
+    li a0 1 # its the same word, so 1
     jr ra
 not_eq:
-    li a0 0 # different words, so 0
+    li a0 0 # different words -> return 0
+    jr ra
+error:
+    li a0 -1 # both words 0 -> return -1
     jr ra
