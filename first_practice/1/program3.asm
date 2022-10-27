@@ -1,5 +1,5 @@
 .data
-   stored_key: .string "password"
+   stored_key: .string ""
    .align 2
    dummy: .zero 9
 .text
@@ -11,61 +11,49 @@
 # free:             ,   ,   ,   , a4, a5, a6,   ,   ,   ,   , t4,   , t6
 
 main:
-	la a1 stored_key #Argument 1 = saved password
-	la a4 dummy #cracked passsword
+	la a0 stored_key #Argument 1 = saved password
+	la a1 dummy # dummy
     jal ra attack
     li a7 10 # end
     ecall
     
 attack:
 	sw ra 0(sp)
-
+	
 point_1:
-    li a3 'a' # first char on the alphabet
-    li t5 26 # number of letters on the alphabet
+    li a2 'a' # first char on the alphabet
+    li t0 26 # number of letters on the alphabet
     
     # study energy for zero
     sb x0 0(sp)
-    mv a2 sp
+    mv a3 sp
     jal ra study_energy # a3 = letter to study energy for -> a0
-    # save # cycles for 0 in t4
-    mv t4 a0
+    # save # cycles for 0 in t1
+    mv t1 t3
     
-loop_1: beqz t5 end
-	mv a0 a3 # print char
-    li a7 11
-    ecall
-    # save char in the stack
-    
-    sb a3 0(sp)
+loop_1: beqz t0 end
+    sb a2 0(sp)
     sb x0 1(sp)
     
-    mv a2 sp
+    mv a3 sp
     
-    jal ra study_energy # a3 = letter to study energy for -> a0
+    jal ra study_energy 
     
-    li a7 1 # print cycles
-    ecall
-    
-    bgt a0 t4 update_letter
-    
-    li a7 11 # go to next line
-    li a0 10
-    ecall
+    bgt t3 t1 update_letter
      
-    addi a3 a3 1 # next char
-    addi t5 t5 -1 # lower counter
+    addi a2 a2 1 # next char
+    addi t0 t0 -1 # lower counter
     j loop_1
 	
     
 end:
-	sb x0 0(a4)
+	sb x0 0(a1)
 	lw ra 0(sp)
 	jr ra
 
 update_letter:
-	sb a3 0(a4)
-    addi a4 a4 1
+	sb a2 0(a1)
+    addi a1 a1 1
     j point_1
 
 study_energy:
@@ -75,10 +63,10 @@ study_energy:
     # go to prev
     
     
-    rdcycle t1
+    rdcycle t2
     jal ra string_compare # a2 = Address1 -> a0
-    rdcycle a0
-    sub a0 a0 t1
+    rdcycle t3
+    sub t3 t3 t2
     
     # restore previous ra
     lw ra 0(sp)
@@ -88,20 +76,15 @@ study_energy:
 
 string_compare:
     
-    lbu t2 0(a1) # a = char11
-    lbu t3 0(a2) # b = char12
+    lbu t4 0(a0) # a = char11
+    lbu t5 0(a3) # b = char12
 
-buc1: beqz t2 try #if t2 is equal to 0, we check if t3 is also equal
-    bne t2 t3 not_eq # if a[n] != b[n] -> not eq
-    addi a1 a1 1 # Address1 + 1
-    addi a2 a2 1 # Address2 + 1
-    lbu t2 0(a1) # reset value of the addresses
-    lbu t3 0(a2)
+buc1: beqz t4 exit_string_compare #if t2 is equal to 0, we check if t3 is also equal
+    bne t4 t5 exit_string_compare # if a[n] != b[n] -> not eq
+    addi a0 a0 1 # Address1 + 1
+    addi a3 a3 1 # Address2 + 1
+    lbu t4 0(a0) # reset value of the addresses
+    lbu t5 0(a3)
     j buc1
 
-try: bnez t3 not_eq # and if t3 is also equal, both words have the same length so its the same word
-	li a0 1 # its the same word, so 1
-    jr ra
-not_eq:
-    li a0 0 # different words, so 0
-    jr ra
+exit_string_compare: jr ra
