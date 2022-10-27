@@ -5,10 +5,10 @@
 
 .text
 main:
-    la a0 string1 #Argument 1 = adress 1
-    la a1 string2 #Argument 2 = adress 2
+    la a0 string1 # string1 = adress 1
+    la a1 string2 # string2 = adress 2
 	
-    jal ra string_compare # a0 = adress1, a2 = adress2 -> return = a0
+    jal ra string_compare # a0 = adress1, a1 = adress2 -> return = a0
     
     # print to test
     li a7 1
@@ -16,7 +16,7 @@ main:
     
     li a7 10 #exit
     ecall
-string_compare: # a0 = adress1, a2 = adress2 -> return[1, 0, -1] = a0
+string_compare: # a0 = adress1, a1 = adress2 -> return[1, 0, -1] = a0
     lbu t0 0(a0) # char1 = adress1[0]
     lbu t1 0(a1) # char2 = adress2[0]
     
