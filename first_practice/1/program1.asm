@@ -17,7 +17,6 @@ main:
     li a7 10 #exit
     ecall
 string_compare:
-    la a1 stored_key #Argument 1 = saved password
     lbu t2 0(a1) # a = char11
     lbu t3 0(a2) # b = char12
     
