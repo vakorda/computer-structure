@@ -1,8 +1,8 @@
 .data
-   stored_key: .string "one"
+   password: .string "one"
 .text
 main:
-	la a0 stored_key
+	la a0 password
 	jal ra study_energy
   
 	li a7 10
