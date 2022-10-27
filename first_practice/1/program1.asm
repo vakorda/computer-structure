@@ -5,8 +5,8 @@
 
 .text
 main:
-    la a1 string1 #Argument 1 = adress 1
-    la a2 string2 #Argument 2 = adress 2
+    la a1 string1 # adress1 = string1
+    la a2 string2 # adress2 = string2
 	
     jal ra string_compare # a1 = adress1, a2 = adress2 -> return = a0
     
