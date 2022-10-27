@@ -1,5 +1,5 @@
 .data
-   stored_key: .string ""
+   stored_key: .string "hola"
    .align 2
    dummy: .zero 9
 .text
@@ -18,9 +18,10 @@ main:
     ecall
     
 attack:
+	addi sp sp -4
 	sw ra 0(sp)
 	
-point_1:
+initialize_cycle:
     li a2 'a' # first char on the alphabet
     li t0 26 # number of letters on the alphabet
     
@@ -45,16 +46,19 @@ loop_1: beqz t0 end
     addi t0 t0 -1 # lower counter
     j loop_1
 	
-    
-end:
-	sb x0 0(a1)
-	lw ra 0(sp)
-	jr ra
-
 update_letter:
 	sb a2 0(a1)
     addi a1 a1 1
-    j point_1
+    j initialize_cycle
+
+end:
+	# adds final 0
+	sb x0 0(a1)
+	lw ra 0(sp)
+    addi sp sp 4
+	jr ra
+
+
 
 study_energy:
 	addi sp sp -4
@@ -75,7 +79,6 @@ study_energy:
 
 
 string_compare:
-    
     lbu t4 0(a0) # a = char11
     lbu t5 0(a3) # b = char12
 
