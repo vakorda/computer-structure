@@ -40,7 +40,7 @@ loop_1: blez t0 end
     
     jal ra study_energy 
     
-    bgt t3 t1 update_letter
+    bgt a4 t1 update_letter
      
     addi a2 a2 1 # next char
     addi t0 t0 -1 # lower counter
@@ -69,8 +69,8 @@ study_energy:
     
     rdcycle t2
     jal ra string_compare # a2 = Address1 -> a0
-    rdcycle t3
-    sub t3 t3 t2
+    rdcycle a4
+    sub a4 a4 t2
     
     # restore previous ra
     lw ra 0(sp)
