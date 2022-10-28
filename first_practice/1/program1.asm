@@ -1,36 +1,43 @@
 .data
   .align 2
-    string1: .string "hola"
-    string2: .string "hola"
+    string1: .string ""
+    string2: .string ""
 
 .text
 main:
-	li s1 0
-string_compare:
-    la t0 string1 #Argument 1 = adress 1
-    la t1 string2 #Argument 2 = adress 2
-    lbu t2 0(t0) # a = char11
-    lbu t3 0(t1) # b = char12
-
-buc1: beqz t2 try #if t2 is equal to 0, we check if t3 is also equal
-    bne t2 t3 not_eq # if a[n] != b[n] -> not eq
-    addi t0 t0 1 # Address1 + 1
-    addi t1 t1 1 # Address2 + 1
-    lbu t2 0(t0) # reset value of the addresses
-    lbu t3 0(t1)
+    la a0 string1 # string1 = adress 1
+    la a1 string2 # string2 = adress 2
+	
+    jal ra string_compare # a0 = adress1, a1 = adress2 -> return = a0
+    
+    # print to test
+    li a7 1
+    ecall
+    
+    li a7 10 #exit
+    ecall
+string_compare: # a0 = adress1, a1 = adress2 -> return[1, 0, -1] = a0
+    lbu t0 0(a0) # char1 = adress1[0]
+    lbu t1 0(a1) # char2 = adress2[0]
+    
+    # if char1 == 0 and char2 == 0: error
+    bnez t0 buc1  # If the first character of A is not a 0, we continue
+    beqz t1 error # And if the first character of A was a 0 and the first of B is also a 0, theres an error (-1)
+    j not_eq      # Else we will give 0(not equal)
+buc1: beqz t0 try # if char1 == 0 -> check if char2 == 0
+    bne t0 t1 not_eq # if char1 != char2 -> not eq
+    addi a0 a0 1 # address1 + 1
+    addi a1 a1 1 # address2 + 1
+    lbu t0 0(a0) # set next char into registers
+    lbu t1 0(a1)
     j buc1
-try:
-	beqz t3 yes #and if t3 is also equal, both words have the same length so its the same word
-	j not_eq #if not, one word is longer so they arent equal
-yes: 
-	li a7 1 #read int
-    li a0 1 #its the same word, so 1
-    ecall
-    li a7 10 #exit
-    ecall
+
+try: bnez t1 not_eq 	# char2 also == 0: both words have the same length and characters -> return 1
+    li a0 1 		# its the same word, so 1
+    jr ra
 not_eq:
-	li a7 1
-    li a0 0 #different words, so 0
-    ecall
-    li a7 10 #exit
-    ecall
+    li a0 0 		# different words -> return 0
+    jr ra
+error:
+    li a0 -1 		# both words 0 -> return -1
+    jr ra

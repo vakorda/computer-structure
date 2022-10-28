@@ -1,58 +1,93 @@
 .data
-   stored_key: .string "one"
-   user_key: .string "Please insert password:" # Necessary so that the next message appears below
-   valid_msg: .string "Valid"
-   no_valid_msg: .string "Invalid"
+   stored_key: .string "hola"
+   .align 2
+   dummy: .zero 9
 .text
+
+# string_compare: a0, a1, a2,   ,   ,   ,   ,   ,   , t2, t3,   ,   ,
+# study_energy:   a0,   , a2, a3,   ,   ,   ,   , t1,   ,   ,   ,   ,
+# loop_1:         a0,   ,   , a3,   ,   ,   , a7,   ,   ,   ,   , t5,
+# total:          a0, a1, a2, a3,   ,   ,   , a7, t1, t2, t3,   , t5,
+# free:             ,   ,   ,   , a4, a5, a6,   ,   ,   ,   , t4,   , t6
+
 main:
-	jal ra study_energy
-  li a7 10
-  ecall
- 
-string_compare:
-    la t0 stored_key #Argument 1 = adress 1
-    lbu t2 0(t0) # char1 = str1[1]
-    lbu t3 0(a2) # char2 = str2[1]
+	la a0 stored_key #Argument 1 = saved password
+	la a1 dummy # dummy
+    jal ra attack
+    li a7 10 # end
+    ecall
+    
+attack:
+	addi sp sp -4
+	sw ra 0(sp)
+	
+initialize_cycle:
+    li a2 'a' # first char on the alphabet
+    li t0 26 # number of letters on the alphabet
+    
+    # study energy for zero
+    sb x0 0(sp)
+    mv a3 sp
+    jal ra study_energy # a3 = letter to study energy for -> a0
+    # save # cycles for 0 in t1
+    mv t1 t3
+    
+loop_1: beqz t0 end
+    sb a2 0(sp)
+    sb x0 1(sp)
+    
+    mv a3 sp
+    
+    jal ra study_energy 
+    
+    bgt t3 t1 update_letter
+     
+    addi a2 a2 1 # next char
+    addi t0 t0 -1 # lower counter
+    j loop_1
+	
+update_letter:
+	sb a2 0(a1)
+    addi a1 a1 1
+    j initialize_cycle
 
-    buc1: beqz t2 end # if char1 == 0: -> try(t3 == 0) if t2 is equal to 0, we check if t3 is also equal
-        bne t2 t3 end # if char1 != char2 -> print no
-        addi t0 t0 1 # Address1 + 1
-        addi a2 a2 1 # Address2 + 1
-        lbu t2 0(t0) # move to next char
-        lbu t3 0(a2)
-        j buc1								# else: print_no; if not, one word is longer so they arent equal		
+end:
+	# adds final 0
+	sb x0 0(a1)
+	lw ra 0(sp)
+    addi sp sp 4
+	jr ra
 
-    end:
-    	mv a0 a3
-    	li a7 11
-         ecall
-		jr ra
+
 
 study_energy:
-	sw ra 0(sp)
-  addi sp sp -4
+	addi sp sp -4
+	# save ra
+    sw ra 0(sp)
+    # go to prev
+    
+    
+    rdcycle t2
+    jal ra string_compare # a2 = Address1 -> a0
+    rdcycle t3
+    sub t3 t3 t2
+    
+    # restore previous ra
+    lw ra 0(sp)
+    addi sp sp 4
+    jr ra
 
-  li t4 0
-	li t5 26
-  li a3 'a'
-loop2: bge t4 t5 end2
-  	sb a3 0(sp)
-  	sb x0 1(sp)
-	mv a2 sp
-  rdcycle t1
-  jal ra string_compare
-	rdcycle t6
-  sub t6 t6 t1
-	mv a0 t6
-	li a7 1
-	ecall
-	li a7 11
-	li a0 10
-	ecall
-  addi a3 a3 1
-  addi t4 t4 1
-  j loop2
-end2:
-addi sp sp 4
-  lw ra 0(sp)
-	jr ra
+
+string_compare:
+    lbu t4 0(a0) # a = char11
+    lbu t5 0(a3) # b = char12
+
+buc1: beqz t4 exit_string_compare #if t2 is equal to 0, we check if t3 is also equal
+    bne t4 t5 exit_string_compare # if a[n] != b[n] -> not eq
+    addi a0 a0 1 # Address1 + 1
+    addi a3 a3 1 # Address2 + 1
+    lbu t4 0(a0) # reset value of the addresses
+    lbu t5 0(a3)
+    j buc1
+
+exit_string_compare: jr ra
