@@ -32,7 +32,7 @@ initialize_cycle:
     # save # cycles for 0 in t1
     mv t1 t3
     
-loop_1: beqz t0 end
+loop_1: blez t0 end
     sb a2 0(sp)
     sb x0 1(sp)
     
