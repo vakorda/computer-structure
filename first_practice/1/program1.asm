@@ -21,9 +21,9 @@ string_compare: # a0 = adress1, a1 = adress2 -> return[1, 0, -1] = a0
     lbu t1 0(a1) # char2 = adress2[0]
     
     # if char1 == 0 and char2 == 0: error
-    bnez t0 buc1 
-    beqz t1 error
-
+    bnez t0 buc1  # If the first character of A is not a 0, we continue
+    beqz t1 error # And if the first character of A was a 0 and the first of B is also a 0, theres an error (-1)
+    j not_eq      # Else we will give 0(not equal)
 buc1: beqz t0 try # if char1 == 0 -> check if char2 == 0
     bne t0 t1 not_eq # if char1 != char2 -> not eq
     addi a0 a0 1 # address1 + 1
@@ -32,12 +32,12 @@ buc1: beqz t0 try # if char1 == 0 -> check if char2 == 0
     lbu t1 0(a1)
     j buc1
 
-try: bnez t1 not_eq # char2 also == 0: both words have the same length and characters -> return 1
-    li a0 1 # its the same word, so 1
+try: bnez t1 not_eq 	# char2 also == 0: both words have the same length and characters -> return 1
+    li a0 1 		# its the same word, so 1
     jr ra
 not_eq:
-    li a0 0 # different words -> return 0
+    li a0 0 		# different words -> return 0
     jr ra
 error:
-    li a0 -1 # both words 0 -> return -1
+    li a0 -1 		# both words 0 -> return -1
     jr ra
