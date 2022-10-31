@@ -11,7 +11,7 @@
 # free:             ,   ,   ,   , a4, a5, a6,   ,   ,   ,   , t4,   , t6
 
 main:
-	la a0 stored_key #Argument 1 = saved password
+	la a0 stored_key # argument_1 = saved password
 	la a1 dummy # dummy
     jal ra attack
     li a7 10 # end
@@ -29,8 +29,9 @@ initialize_cycle:
     sb x0 0(sp)
     mv a3 sp
     jal ra study_energy # a3 = letter to study energy for -> a0
-    # save # cycles for 0 in t1
+    # save number of cycles for 0 in t1
     mv t1 t3
+    
     
 loop_1: blez t0 end
     sb a2 0(sp)
@@ -52,29 +53,27 @@ update_letter:
     j initialize_cycle
 
 end:
-	# adds final 0
+	# adds final 0 to the character
 	sb x0 0(a1)
 	lw ra 0(sp)
     addi sp sp 4
 	jr ra
 
-
-
 study_energy:
-	addi sp sp -4
 	# save ra
+	addi sp sp -4
     sw ra 0(sp)
-    # go to prev
     
-    
+    # calculate cycles
     rdcycle t2
-    jal ra string_compare # a2 = Address1 -> a0
+    jal ra string_compare # a2 = address1 -> a0
     rdcycle a4
     sub a4 a4 t2
     
     # restore previous ra
     lw ra 0(sp)
     addi sp sp 4
+    # exit function
     jr ra
 
 
