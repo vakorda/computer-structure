@@ -25,11 +25,11 @@ MBR ← M[MAR]
 
 BR[RRE1] <- MBR""""""""""""""""""""""""""""""""""""""""""""""""""
 
-### sw RRE1, @(RRE2) :: Memory [RRE1] ← BR[RRE2]
+### sw RRE1, @(RRE2) :: Memory[RRE2] ← BR[RRE1]
 
-MBR ← RRE2															; RA = RRE2, T9, C1
+MBR ← RRE1															; RA = RRE1, T9, C1
 
-MAR ← RRE1															; RA = RRE1, T9, C0
+MAR ← RRE2															; RA = RRE2, T9, C0
 
 M[MAR] ← MBR													  ; Ta, W, BW = 11, Td
 
