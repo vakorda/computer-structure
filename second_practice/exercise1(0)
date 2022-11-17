@@ -1,3 +1,13 @@
+begin
+{
+    fetch:          (T2, C0),
+                    (TA, R, BW=11, M1=1, C1=1),
+                    (M2, C2, T1, C3),
+                    (A0, B=0, C=0)
+}
+
+
+
 add reg1 reg2 reg3 {
             co=010010,
             cop=1001, #?
