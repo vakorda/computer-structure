@@ -62,6 +62,37 @@ mul_add RRE1, RRE2, RRE3, RRE4 {
 }
 
 
+jal U16{
+  					# CO (31-26): 100001
+            co=  100001,
+            nwords=1,
+						U16=inm(15,0),
+  					help='',
+            {
+              # BR[ra] ← PC
+              # PC ← U16
+              
+                (T2 = 1, LC = 1,MR =1, SELC = 1),
+								(SE=0, OFFSET=0, SIZE=10000, T3, C2,A0=1, B=1, C=0)
+            }
+  
+}
+
+
+jr_ra{
+  					# CO (31-26): 100010
+            co=100010,
+            nwords=1,
+  					help='jr ra',
+            {
+              # PC ← ra
+                (MR=1, SELA=1, T9, C2, A0=1, B=1, C=0)
+            }
+  
+}
+
+
+
 registers
 {
 	0=(zero,  x0),
