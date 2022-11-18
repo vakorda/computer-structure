@@ -39,13 +39,12 @@ add RRE1, RRE2, RRE3 {
             help='r1 = r2 + r3',
             {
               	# BR[RRE1] ← BR[RRE2] + BR[RRE3]
-                (MC = 1,MR=0, SELA=10000, SELB=1011, SELCOP = 1010, T6 = 1, LC= 1, SELC=10101, SELP = 11, M7 = 1, C7, A0=1, B=1, C=0), # RB = RRE3, # RA = RRE2, # RC = RRE1
+                (MC,MR=0, SELA=10000, SELB=1011, SELCOP = 1010, T6, LC, SELC=10101, SELP = 11, M7, C7, A0=1, B=1, C=0), # RB = RRE3, # RA = RRE2, # RC = RRE1
             }
   
 }
 
 mul_add RRE1, RRE2, RRE3, RRE4 {
-  					# CO (31-26): 011001
             co=011001,
             nwords=1,
             RRE1=reg(25,21),
@@ -56,8 +55,8 @@ mul_add RRE1, RRE2, RRE3, RRE4 {
             {
               	# RT1 <- BR[RRE2] * BR[RRE3]
               	# BR[RRE1] ← RT1 + BR[RRE4]	
-                (MC = 1,MR=0, SELA=10000, SELB=1011, SELCOP = 1100,MA=0,MB=0, T6 = 1, C4 = 1),
-								(MC = 1,MA = 1, MR=0, SELB=110, MB=0, SELCOP = 1010, T6 = 1, LC = 1, SELC=10101 ,SELP= 11, M7 = 1, C7, A0=1, B=1, C=0)
+                (MC,MR=0, SELA=10000, SELB=1011, SELCOP = 1100,MA=0,MB=0, T6 = 1, C4 = 1),
+								(MC,MA, MR=0, SELB=110, MB=0, SELCOP = 1010, T6, LC, SELC=10101 ,SELP= 11, M7, C7, A0=1, B=1, C=0)
             }
 }
 
@@ -72,13 +71,11 @@ jal U16{
               # BR[ra] ← PC
               # PC ← U16
               
-                (T2 = 1, LC = 1,MR =1, SELC = 1),
+                (T2, LC,MR = 1, SELC = 1),
 								(SE=0, OFFSET=0, SIZE=10000, T3, C2,A0=1, B=1, C=0)
             }
   
 }
-
-
 jr_ra{
   					# CO (31-26): 100010
             co=100010,
@@ -92,7 +89,93 @@ jr_ra{
 }
 
 
+sw RRE1 (RRE2) {
+  					# CO (31-26): 010000
+            co= 010000,
+            nwords=1,
+            RRE1=reg(25,21)
+            RRE2=reg(20,16)
+  					help = 'a[i] = b'
+            {
+              # MBR ← RRE1
+              # MAR ← RRE2
+              # M[MAR] ← MBR
+                (T9, C1, MR= 0, SELA=10101), # RA = RRE1,
+                (T9, C0, MR= 0, SELA=10000), # RA = RRE2, 
+								(TA, W, BW = 11, TD, A0=1, B=1, C=0)
+            }
+  
+}
 
+             
+lw RRE1, (RRE2) {
+  					# CO (31-26): 010011
+            co= 010011,
+            nwords=1,
+            RRE1=reg(25,21)
+            RRE2=reg(20,16)
+  					help = 'a = b[i]'
+            {
+              # MAR ← RRE2	
+              # MBR ← M[MAR]
+              # RRE1 ← MBR
+                (T9, C0,  MR= 0, SELA=10000), # RA = RRE2
+                (TA, R, BW=11, M1, C1),
+								(T1, LC, MR=0, SELC=10101,  A0=1, B=1, C=0) #  RC = RRE1
+            }
+  
+}
+             
+             
+halt{
+  					# CO (31-26): 100011
+            co=100011,
+            nwords=1,
+  					help='stop',
+            {
+                (MR=1, SELA=0, T9, C2, C7, A0=1, B=1, C=0)
+            }
+  
+}          
+             
+             
+xchb (RRE1), (RRE2) {
+  					# CO (31-26): 100011
+            co=011010,
+            nwords=1,
+  					RRE1 = reg(25,21)
+						RRE2 = reg(20,16)
+  					help='a[i],b[j] = b[j],a[i]',
+            {
+               # MAR <- RRE1														; RA = RRE1,T9, C0
+               # MBR <- MM[MAR]													; Ta, BW = 11,R,M1,C1
+               # RT1 <- MBR															; T1, C4
+               # MAR <- RRE2														; RA = RRE2,T9, C0
+               # MBR <- MM[MAR]													; Ta, BW = 11,R,M1,C1
+               # MAR <- RRE1														; RA = RRE1, T9, C0
+               # MM[MAR] <- MBR													; Ta, W, BW = 11, Td 
+               # MBR <- RT1 														; T4, M1 = 0, C1
+               # MAR <- RRE2														; RA = RRE2, T9, C0
+               # MM[MAR] <- MBR													; Ta, W, BW = 11, Td 
+              
+              	(MR = 0, SELA = 10101, T9,C0)
+              	(Ta, BW = 11, R, M1, C1)
+              	(T1, C4)
+              	(MR = 0, SELA = 10000, T9, C0)
+              	(Ta, BW = 11, R, M1, C1)
+              	(MR = 0, SELA = 10101, T9,C0)
+              	(TA, W, BW = 11, TD)
+                (T4, M1 = 0,C1)
+                (MR = 0, SELA = 10000, T9, C0)
+                (TA, W, BW = 11, TD, A0=1, B=1, C=0)
+            }
+  
+}          
+             
+             
+             
+             
+             
 registers
 {
 	0=(zero,  x0),
@@ -128,6 +211,7 @@ registers
 	30=(t5,  x30),
 	31=(t6,  x31)
 }
+
 
 
 
