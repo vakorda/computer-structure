@@ -30,13 +30,10 @@
 
 .text
 
-   main:   # send address to IO.data
-           lui  t5 msg
-           out  t5 0x3108
-
-           # send show    to IO.control
-           lui  t5 0x20
-           out  t5 0x3104
-           
-           # the end
-           jr ra
+   main:   
+         # send address of msg to 0x3108 (data I/O register)
+         lui t5 msg # lui load in t5 the msg address
+         out t5 0x3108 # out send t5 value to 0x3108 I/O address
+         # send show command to 0x3104 (control I/O register)
+         lui t5 0x20 # 0x20 means “show image” command
+         out t5 0x3104 # out send t5 value to 0x3104 I/O address
