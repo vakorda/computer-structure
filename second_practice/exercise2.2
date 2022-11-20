@@ -1,8 +1,29 @@
 .data
-    msg:   .byte 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-                 0,1,0,1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-                 0,1,0,1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-                 0,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    msg:   .byte 3,3,3,3,2,2,2,2, 2,2,2,2, 1,2,1,1,2,1,1,1, 1,1,2,4,1,1,1,1,
+                 0,1,0,1,0,1,1,1, 0,1,1,1,0,1,1,1, 0,1,0,1,0,0,0,0,
+                 0,1,0,1,0,1,0,1, 0,1,0,1,0,1,0,1, 0,1,0,1,0,0,0,0,
+                 0,1,1,1,0,1,1,1, 0,1,1,1,0,1,1,1, 0,1,1,1,0,0,0,0,
+                 0,1,0,1,0,1,0,1, 0,1,0,0,0,1,0,0, 0,0,0,1,0,0,0,0,
+                 0,1,0,1,0,1,0,1, 0,1,0,0,0,1,0,0, 0,1,1,1,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,1,0,1,0,1,1,1, 0,1,1,1,0,1,1,1, 0,0,0,0,0,0,0,0,
+                 0,1,0,1,0,1,0,0, 0,1,0,1,0,1,0,1, 0,0,0,0,0,0,0,0,
+                 0,1,1,1,0,1,1,1, 0,1,1,1,0,1,0,1, 0,0,0,0,0,0,0,0,
+                 0,0,0,1,0,1,0,0, 0,1,0,1,0,1,1,0, 0,0,0,0,0,0,0,0,
+                 0,1,1,1,0,1,1,1, 0,1,0,1,0,1,0,1, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,1,1,1,0,1,1,1, 0,1,1,1,0,1,1,1, 0,0,1,0,0,0,0,0,
+                 0,0,0,1,0,1,0,1, 0,0,0,1,0,0,0,1, 0,0,1,0,0,0,0,0,
+                 0,1,1,1,0,1,0,1, 0,1,1,1,0,1,1,1, 0,0,1,0,0,0,0,0,
+                 0,1,0,0,0,1,0,1, 0,1,0,0,0,1,0,0, 0,0,0,0,0,0,0,0,
+                 0,1,1,1,0,1,1,1, 0,1,1,1,0,1,1,1, 0,0,1,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0
+
                  
 
 .text
@@ -15,33 +36,57 @@
            lui t5 0x20 # 0x20 means “show image” command
            out t5 0x3104 # out send t5 value to 0x3104 I/O address
            lui a0 msg
-					 jal demo
-           # the end
- 						halt
-	demo:
-				lui t0 -1 # i
-        lui t1  0 # j
-   			lui  t2 24
-        lui t3 1
-	 loopi:
-   			add t0 t3 t0
-   			beq t0 t2 end
-        
-       	loopj:
-        		beq t1 t2 loopi
-    		
-    
-    
-    
-
+           lui a1 4
+           add t6 a0 a1
+           xchb (a0) (t6)
+           
+           lui a0 msg
+           
            lui t5 msg # lui load in t5 the msg address
            out t5 0x3108 # out send t5 value to 0x3108 I/O address
            # send show command to 0x3104 (control I/O register)
            lui t5 0x20 # 0x20 means “show image” command
            out t5 0x3104 # out send t5 value to 0x3104 I/O address
-  end:	
+           
+					 #jal demo
+           # the end
+ 						halt
+	demo:
+				lui t0 576 # i
+        # These lines of codes are for getting at the bottom of the matrix
+        lui t1 -1
+        add t6 a0 t0
+        # t2 = -24*24 for sp
+        mul_add t2 t1 t0 x0
+        add sp sp t2
+        add t3 sp x0
+        lui t5 4
+        lui t1 -4
+	 loopi:
+   			beq a0 t6 end
+        xchb (a0) (t6)
+        add t6 t6 t1
+        add a0 a0 t5 
+        
+        lui t5 msg # lui load in t5 the msg address
+        out t5 0x3108 # out send t5 value to 0x3108 I/O address
+        # send show command to 0x3104 (control I/O register)
+        lui t5 0x20 # 0x20 means “show image” command
+        out t5 0x3104 # out send t5 value to 0x3104 I/O address
+        
+        
+        beq x0 x0 loopi
+  end:
+  		lui t5 msg # lui load in t5 the msg address
+           out t5 0x3108 # out send t5 value to 0x3108 I/O address
+           # send show command to 0x3104 (control I/O register)
+           lui t5 0x20 # 0x20 means “show image” command
+           out t5 0x3104 # out send t5 value to 0x3104 I/O address
   		lui a0 1
       jr_ra
+
+
+
 
 
 
