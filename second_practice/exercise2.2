@@ -48,20 +48,21 @@
         lui t3 1 # to add to the counters
         lui t4 24 # size of the matrix
 	 loopi: beq t1 t4 end
-   			loopj: beq t2 t4 next_line
-        	xchb (t0) (t6) #change addresses
-        	add t2 t2 t3 # j += 1
-          add t6 t6 t3 # address += 1
-          add t0 t0 t4 # alt_address += 24
-          beq x0 x0 loopj
-   			next_line:
-   				add t1 t1 t3 # i += 1
-					add t2 t1 t3 # j = i + 1 (to skip diagonal)
-          add t6 t6 t2 # address += j 
-          mul_add t5 t2 t4 t1 # t5 = j*24 + i
-          add t0 a0 t5 # alt_address = initial address + t5
-
-       beq x0 x0 loopi
+	 # Loop for passing colums and switching the values
+		loopj: beq t2 t4 next_line
+		  xchb (t0) (t6) #change addresses
+		  add t2 t2 t3 # j += 1
+		  add t6 t6 t3 # address += 1
+		  add t0 t0 t4 # alt_address += 24
+		  beq x0 x0 loopj
+	# next line and get the first value te one after the diagonal
+		next_line:
+		  add t1 t1 t3 # i += 1
+		  add t2 t1 t3 # j = i + 1 (to skip diagonal)
+		  add t6 t6 t2 # address += j 
+		  mul_add t5 t2 t4 t1 # t5 = j*24 + i
+		  add t0 a0 t5 # alt_address = initial address + t5
+		beq x0 x0 loopi
   end:
   		# send address of msg to 0x3108 (data I/O register)
       lui t5 msg # lui load in t5 the msg address
