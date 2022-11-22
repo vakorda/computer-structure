@@ -126,44 +126,6 @@ lw RRE1, (RRE2) {
   
 }
              
-
-sb RRE1 (RRE2) {
-  					# CO (31-26): 010000
-            co= 010001,
-            nwords=1,
-            RRE1=reg(25,21)
-            RRE2=reg(20,16)
-  					help = 'a[i] = b'
-            {
-              # MBR ← RRE1
-              # MAR ← RRE2
-              # M[MAR] ← MBR
-                (T9, C1, MR= 0, SELA=10101), # RA = RRE1,
-                (T9, C0, MR= 0, SELA=10000), # RA = RRE2, 
-								(TA, W, BW = 0, TD, A0=1, B=1, C=0)
-            }
-  
-}
-
-             
-lb RRE1, (RRE2) {
-  					# CO (31-26): 010011
-            co= 010100,
-            nwords=1,
-            RRE1=reg(25,21)
-            RRE2=reg(20,16)
-  					help = 'a = b[i]'
-            {
-              # MAR ← RRE2	
-              # MBR ← M[MAR]
-              # RRE1 ← MBR
-                (T9, C0,  MR= 0, SELA=10000), # RA = RRE2
-                (TA, R, BW=0, M1, C1),
-								(T1, LC, MR=0, SELC=10101,  A0=1, B=1, C=0) #  RC = RRE1
-            }
-  
-}             
-             
 halt{
   					# CO (31-26): 100011
             co=100011,
