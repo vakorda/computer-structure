@@ -36,54 +36,54 @@
            lui t5 0x20 # 0x20 means “show image” command
            out t5 0x3104 # out send t5 value to 0x3104 I/O address
            lui a0 msg
-           lui a1 4
-           add t6 a0 a1
-           xchb (a0) (t6)
-           
-           lui a0 msg
-           
-           lui t5 msg # lui load in t5 the msg address
-           out t5 0x3108 # out send t5 value to 0x3108 I/O address
-           # send show command to 0x3104 (control I/O register)
-           lui t5 0x20 # 0x20 means “show image” command
-           out t5 0x3104 # out send t5 value to 0x3104 I/O address
-           
-					 #jal demo
+           jal demo
            # the end
  						halt
 	demo:
-				lui t0 576 # i
-        # These lines of codes are for getting at the bottom of the matrix
-        lui t1 -1
-        add t6 a0 t0
-        # t2 = -24*24 for sp
-        mul_add t2 t1 t0 x0
-        add sp sp t2
-        add t3 sp x0
-        lui t5 4
-        lui t1 -4
-	 loopi:
-   			beq a0 t6 end
-        xchb (a0) (t6)
-        add t6 t6 t1
-        add a0 a0 t5 
+				add t0 a0 x0 # alt_adress
+        add t6 a0 x0 # start of the address 
+        # These lines of codes are for getting to the bottom of the matrix
+       	lui t1 0 # t1 = i
+        lui t2 0 # t2 = j
+        lui t3 1 # to add to the counters
+        lui t4 24 # size of the matrix
+	 loopi: beq t1 t4 end
+   			loopj: beq t2 t4 next_line
+        	xchb (t0) (t6)
+        	add t2 t2 t3
+          add t6 t6 t3
+          add t0 t0 t4
+          beq x0 x0 loopj
+   			next_line:
+   				add t1 t1 t3 # i += 1
+					add t2 t1 t3 # j = i + 1 (to skip diagonal)
+          add t6 t6 t2 # address += j 
+          mul_add t5 t2 t4 t1 # t5 = j*24 + i
+          add t0 a0 t5 # alt_address = initial address + t5
+   
         
-        lui t5 msg # lui load in t5 the msg address
+        
+        lui t5 msg 
         out t5 0x3108 # out send t5 value to 0x3108 I/O address
-        # send show command to 0x3104 (control I/O register)
+        #send show command to 0x3104 (control I/O register)
         lui t5 0x20 # 0x20 means “show image” command
         out t5 0x3104 # out send t5 value to 0x3104 I/O address
         
-        
-        beq x0 x0 loopi
+        #lui t5 msg # lui load in t5 the msg address
+        #out t5 0x3108 # out send t5 value to 0x3108 I/O address
+        # send show command to 0x3104 (control I/O register)
+        #lui t5 0x20 # 0x20 means “show image” command
+        #out t5 0x3104 # out send t5 value to 0x3104 I/O address
+       beq x0 x0 loopi
   end:
-  		lui t5 msg # lui load in t5 the msg address
+  		lui t5 msg2 # lui load in t5 the msg address
            out t5 0x3108 # out send t5 value to 0x3108 I/O address
            # send show command to 0x3104 (control I/O register)
            lui t5 0x20 # 0x20 means “show image” command
            out t5 0x3104 # out send t5 value to 0x3104 I/O address
   		lui a0 1
       jr_ra
+
 
 
 
